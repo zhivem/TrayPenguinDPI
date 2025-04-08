@@ -256,52 +256,69 @@ namespace TrayPenguinDPI
             {
                 try
                 {
+                    // Очистка процессов и служб с помощью ProcessHelper
                     await ProcessHelper.CleanupProcessesAndServices();
                     RegistrySettings.ClearAllSettings();
 
                     string appDir = AppDomain.CurrentDomain.BaseDirectory;
                     string appPath = Environment.ProcessPath;
                     string appFile = Path.GetFileName(appPath);
-                    string batchPath = Path.Combine(Path.GetTempPath(), "uninstall_treypenguindpi.bat");
+                    string programFolder = Path.Combine(appDir, "Program");
+                    string batchPath = Path.Combine(Path.GetTempPath(), "uninstall_traypenguindpi.bat");
 
+                    // Обновленный .bat-файл: удаляет только .exe и папку Program
                     string batchContent = $@"
-@echo off
-echo Waiting for process %1 to exit...
-timeout /t 3 >nul
+                    @echo off
+                    echo Waiting for process {appFile} to exit...
+                    timeout /t 5 >nul
 
-:waitloop
-tasklist | find /i ""%1"" >nul
-if not errorlevel 1 (
-    echo Process is still running, waiting...
-    timeout /t 1 >nul
-    goto waitloop
-)
+                    :waitloop
+                    tasklist | find /i ""{appFile}"" >nul
+                    if not errorlevel 1 (
+                        echo Process is still running, forcing termination...
+                        taskkill /f /im ""{appFile}"" >nul 2>&1
+                        timeout /t 2 >nul
+                        goto waitloop
+                    )
 
-echo Ensuring the process is killed...
-taskkill /f /im ""%1"" >nul 2>&1
+                    echo Ensuring the process is terminated...
+                    taskkill /f /im ""{appFile}"" >nul 2>&1
 
-echo Deleting Program folder...
-rd /s /q ""%2\Program"" 2>nul
+                    echo Deleting Program folder...
+                    rd /s /q ""{programFolder}"" 2>nul
+                    if exist ""{programFolder}"" (
+                        echo Program folder could not be deleted. Retrying...
+                        timeout /t 2 >nul
+                        rd /s /q ""{programFolder}"" 2>nul
+                    )
 
-echo Deleting executable...
-del /f /q ""%3"" 2>nul
+                    echo Deleting executable...
+                    del /f /q ""{appPath}"" 2>nul
+                    if exist ""{appPath}"" (
+                        echo Executable could not be deleted. Retrying...
+                        timeout /t 2 >nul
+                        del /f /q ""{appPath}"" 2>nul
+                    )
 
-echo Deleting self...
-del /q ""%~f0"" 2>nul
-";
+                    echo Deleting batch file...
+                    del /q ""%~f0"" 2>nul
+                    exit
+                    ";
 
                     File.WriteAllText(batchPath, batchContent);
 
+                    // Запуск .bat-файла с правами администратора
                     Process.Start(new ProcessStartInfo
                     {
                         FileName = batchPath,
-                        Arguments = $"\"{appFile}\" \"{appDir}\" \"{appPath}\"",
+                        Arguments = "",
                         UseShellExecute = true,
                         Verb = "runas",
                         CreateNoWindow = true
                     });
 
-                    await Task.Delay(1000);
+                    // Задержка перед завершением приложения
+                    await Task.Delay(2000);
                     Application.Current.Shutdown();
                 }
                 catch (Exception ex)
