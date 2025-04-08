@@ -23,9 +23,9 @@ timeout /t 1 /nobreak >nul
 
 :: Terminate processes
 echo [STEP 1] Terminating processes...
-echo          - TreyPenguinDPI.exe
+echo          - TrayPenguinDPI.exe
 taskkill /IM TreyPenguinDPI.exe /F >nul 2>&1
-if %ERRORLEVEL% neq 0 (echo          [FAILED] Could not terminate TreyPenguinDPI.exe) else (echo          [OK] Terminated successfully)
+if %ERRORLEVEL% neq 0 (echo          [FAILED] Could not terminate TrayPenguinDPI.exe) else (echo          [OK] Terminated successfully)
 echo          - winws.exe
 taskkill /IM winws.exe /F >nul 2>&1
 if %ERRORLEVEL% neq 0 (echo          [FAILED] Could not terminate winws.exe) else (echo          [OK] Terminated successfully)
@@ -96,7 +96,7 @@ timeout /t 1 /nobreak >nul
 
 :: Launch updated program
 echo [STEP 7] Launching TreyPenguinDPI...
-start TreyPenguinDPI.exe
+start TrayPenguinDPI.exe
 echo          [OK] Program launched
 
 :: Finalize
