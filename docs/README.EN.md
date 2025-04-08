@@ -31,8 +31,8 @@ TrayPenguinDPI is a Windows application written in `C#` designed to bypass Deep 
 3. Run `TrayPenguinDPI.exe` (requires administrator privileges)
 
 ## Usage
-![image](https://github.com/user-attachments/assets/a1b6791b-c67f-44e3-826a-039540c187b3)
-![image](https://github.com/user-attachments/assets/99f23d6d-b10b-4ffc-a96a-d7153755a485)
+![image](https://github.com/user-attachments/assets/44c8f10a-fcc3-4eeb-b698-6fb1a7762382)
+![image](https://github.com/user-attachments/assets/5ec81eae-3979-4e2d-986e-31b9aaa230bf)
 
 After installation, the icon will appear in the system tray. Available actions:
 
