@@ -178,15 +178,16 @@ namespace TrayPenguinDPI
             trayIcon = new NotifyIcon
             {
                 Text = "TrayPenguinDPI Control",
-                Icon = Icon.ExtractAssociatedIcon(mainModule.FileName),
+                Icon = mainModule != null ? Icon.ExtractAssociatedIcon(mainModule.FileName) ?? SystemIcons.Application: SystemIcons.Application,
+
                 Visible = true
             };
 
-            _startItem = (ToolStripMenuItem)trayIcon.AddMenu((string)FindResource("Start"), LoadImageFromResource("/Program/Assets/Images/start.png"), StartZapret_Click);
-            _stopItem = (ToolStripMenuItem)trayIcon.AddMenu((string)FindResource("Stop"), LoadImageFromResource("/Program/Assets/Images/stop.png"), StopZapret_Click);
+            _startItem = (ToolStripMenuItem)trayIcon.AddMenu(GetResourceString("Start"), LoadImageFromResource("/Program/Assets/Images/start.png"), StartZapret_Click);
+            _stopItem = (ToolStripMenuItem)trayIcon.AddMenu(GetResourceString("Stop"), LoadImageFromResource("/Program/Assets/Images/stop.png"), StopZapret_Click);
             trayIcon.AddMenu("-");
 
-            _strategiesMenu = (ToolStripMenuItem)trayIcon.AddMenu((string)FindResource("Configurations"), null, []);
+            _strategiesMenu = (ToolStripMenuItem)trayIcon.AddMenu(GetResourceString("Configurations"), null, []);
             for (int i = 0; i < _strategyNames.Count; i++)
             {
                 int index = i;
@@ -195,15 +196,15 @@ namespace TrayPenguinDPI
                 _strategiesMenu.DropDownItems.Add(item);
             }
 
-            trayIcon.AddMenu((string)FindResource("Settings"), null, Settings_Click);
+            trayIcon.AddMenu(GetResourceString("Settings"), null, Settings_Click);
             trayIcon.AddMenu("-");
-            trayIcon.AddMenu((string)FindResource("Exit"), null, Exit_Click);
+            trayIcon.AddMenu(GetResourceString("Exit"), null, Exit_Click);
             trayIcon.DoubleClick += TrayIcon_DoubleClick;
 
             UpdateMenuState();
         }
 
-        private async Task HandleStartupTasks()
+        private static async Task HandleStartupTasks()
         {
             if (RegistrySettings.GetValue("UpdateBlacklistOnStartup", false))
                 await UpdateBlacklistsAsync();
@@ -343,7 +344,7 @@ namespace TrayPenguinDPI
                 RedirectStandardError = true
             };
 
-            Process process = Process.Start(processInfo);
+            Process? process = Process.Start(processInfo) ?? throw new InvalidOperationException($"Не удалось запустить процесс: {executable}");
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
             return process;

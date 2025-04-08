@@ -11,8 +11,7 @@
 		<PublishSingleFile>true</PublishSingleFile>
 		<!-- Один .exe со всеми DLL -->
 		<SelfContained>false</SelfContained>
-		<!-- Без .NET Runtime -->
-		<IncludeAllContentForSelfExtract>false</IncludeAllContentForSelfExtract>
+		<IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
 		<!-- Не встраивать контент -->
 		<PublishTrimmed>false</PublishTrimmed>
 		<!-- Не обрезать зависимости -->

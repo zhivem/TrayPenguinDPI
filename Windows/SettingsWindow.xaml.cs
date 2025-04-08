@@ -256,17 +256,22 @@ namespace TrayPenguinDPI
             {
                 try
                 {
-                    // Очистка процессов и служб с помощью ProcessHelper
                     await ProcessHelper.CleanupProcessesAndServices();
                     RegistrySettings.ClearAllSettings();
 
                     string appDir = AppDomain.CurrentDomain.BaseDirectory;
-                    string appPath = Environment.ProcessPath;
+                    string? appPath = Environment.ProcessPath;
+
+                    if (string.IsNullOrEmpty(appPath))
+                    {
+                        MessageBox.Show("Не удалось определить путь к исполняемому файлу.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
                     string appFile = Path.GetFileName(appPath);
                     string programFolder = Path.Combine(appDir, "Program");
                     string batchPath = Path.Combine(Path.GetTempPath(), "uninstall_traypenguindpi.bat");
 
-                    // Обновленный .bat-файл: удаляет только .exe и папку Program
                     string batchContent = $@"
                     @echo off
                     echo Waiting for process {appFile} to exit...
@@ -307,7 +312,6 @@ namespace TrayPenguinDPI
 
                     File.WriteAllText(batchPath, batchContent);
 
-                    // Запуск .bat-файла с правами администратора
                     Process.Start(new ProcessStartInfo
                     {
                         FileName = batchPath,
@@ -317,7 +321,6 @@ namespace TrayPenguinDPI
                         CreateNoWindow = true
                     });
 
-                    // Задержка перед завершением приложения
                     await Task.Delay(2000);
                     Application.Current.Shutdown();
                 }
