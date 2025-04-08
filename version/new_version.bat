@@ -1,5 +1,5 @@
 @echo off
-title TreyPenguinDPI Update
+title TrayPenguinDPI Update
 color 0A
 
 :: Header
