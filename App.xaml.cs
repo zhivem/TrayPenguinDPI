@@ -16,8 +16,8 @@ namespace TrayPenguinDPI
     public partial class App : System.Windows.Application
     {
         private const string MutexName = "TrayPenguinDPIMutex";
-        private const string _ipsetUrl = "https://raw.githubusercontent.com/zhivem/traypenguindpi/refs/heads/main/blacklist/ipset-unlock.txt";
-        private const string _generalListUrl = "https://raw.githubusercontent.com/zhivem/traypenguindpi/refs/heads/main/blacklist/list-general.txt";
+        private const string _ipsetUrl = "https://github.com/zhivem/TrayPenguinDPI/raw/refs/heads/master/blacklist/ipset-unlock.txt";
+        private const string _generalListUrl = "https://github.com/zhivem/TrayPenguinDPI/raw/refs/heads/master/blacklist/list-general.txt";
 
         private static readonly string _zapretPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Program", "Zapret"));
         private static readonly string _blacklistPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Program", "Blacklist"));
@@ -247,7 +247,7 @@ namespace TrayPenguinDPI
             string currentConfigVersion = VersionHelper.GetVersionFromIni(iniContent, "ConfigVersion") ?? "0.0";
 
             using var client = new HttpClient();
-            string remoteIniContent = await client.GetStringAsync("https://raw.githubusercontent.com/zhivem/traypenguindpi/refs/heads/main/version/setting.ini");
+            string remoteIniContent = await client.GetStringAsync("https://github.com/zhivem/TrayPenguinDPI/raw/refs/heads/master/version/setting.ini");
 
             string latestZapretVersion = VersionHelper.GetVersionFromIni(remoteIniContent, "ZapretVersion") ?? "0.0";
             string latestConfigVersion = VersionHelper.GetVersionFromIni(remoteIniContent, "ConfigVersion") ?? "0.0";

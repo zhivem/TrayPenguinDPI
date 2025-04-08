@@ -57,7 +57,7 @@ namespace TrayPenguinDPI
             string currentConfigVersion = VersionHelper.GetVersionFromIni(iniContent, "ConfigVersion") ?? "0.0";
 
             using var client = new HttpClient();
-            string remoteIniContent = await client.GetStringAsync("https://raw.githubusercontent.com/zhivem/traypenguindpi/refs/heads/main/version/setting.ini");
+            string remoteIniContent = await client.GetStringAsync("https://github.com/zhivem/TrayPenguinDPI/raw/refs/heads/master/version/setting.ini");
 
             _latestZapretVersion = VersionHelper.GetVersionFromIni(remoteIniContent, "ZapretVersion") ?? "0.0";
             _latestConfigVersion = VersionHelper.GetVersionFromIni(remoteIniContent, "ConfigVersion") ?? "0.0";
@@ -167,7 +167,7 @@ namespace TrayPenguinDPI
 
         private async Task DownloadAndRunUpdateBat()
         {
-            string batUrl = "https://github.com/zhivem/traypenguindpi/raw/refs/heads/main/version/new_version.bat";
+            string batUrl = "https://github.com/zhivem/TrayPenguinDPI/raw/refs/heads/master/version/new_version.bat";
             string batPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "new_version.bat");
 
             using var client = new HttpClient();
@@ -190,10 +190,10 @@ namespace TrayPenguinDPI
         private async Task InstallComponentUpdates()
         {
             if (_hasZapretUpdate)
-                await DownloadAndExtractArchiveAsync("https://github.com/zhivem/traypenguindpi/raw/refs/heads/main/update/zapret.zip", "zapret_temp.zip", "Zapret");
+                await DownloadAndExtractArchiveAsync("https://github.com/zhivem/TrayPenguinDPI/raw/refs/heads/master/update/zapret.zip", "zapret_temp.zip", "Zapret");
             if (_hasConfigUpdate)
             {
-                await DownloadAndExtractArchiveAsync("https://github.com/zhivem/traypenguindpi/raw/refs/heads/main/update/config.zip", "config_temp.zip", "Strateg");
+                await DownloadAndExtractArchiveAsync("https://github.com/zhivem/TrayPenguinDPI/raw/refs/heads/master/update/config.zip", "config_temp.zip", "Strateg");
                 App.LoadStrategies();
             }
             if (_hasZapretUpdate || _hasConfigUpdate)
