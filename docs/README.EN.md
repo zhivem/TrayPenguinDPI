@@ -18,6 +18,7 @@ TrayPenguinDPI is a Windows application written in `C#` designed to bypass Deep 
 - 🔧 Windows service creation and management
 - 🔔 Notification system
 - 🔄 Update checks
+- 🖱️ Double - clicking on the tray icon starts and stops Zapret
 
 ## Requirements
 
