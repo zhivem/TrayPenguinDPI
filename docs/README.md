@@ -2,6 +2,9 @@
 
 ![Иконка TrayPenguinDPI](https://github.com/zhivem/TrayPenguinDPI/blob/master/penguin_icon.ico)
 
+[![en](https://img.shields.io/badge/lang-en-red.svg)](./README.EN.md)
+[![ru](https://img.shields.io/badge/lang-ru-green.svg)](./README.md)
+
 TrayPenguinDPI — это приложение для Windows, написанное на `C#`, предназначенное для обхода систем Deep Packet Inspection (DPI). Работает из системного трея с поддержкой тёмной и светлой тем. 
 
 > [!NOTE]
