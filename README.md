@@ -2,7 +2,7 @@
 
 ![Иконка TrayPenguinDPI](https://github.com/zhivem/TrayPenguinDPI/blob/master/penguin_icon.ico)
 
-TrayPenguinDPI - это приложение для Windows написаное на `C#`, позволяющее обходить системы Deep Packet Inspection (DPI). Работает из системного трея с поддержкой темной/светлой темы.
+TrayPenguinDPI — это приложение для Windows, написанное на `C#`, предназначенное для обхода систем Deep Packet Inspection (DPI). Работает из системного трея с поддержкой тёмной и светлой тем. Также существует версия на `Python` под названием [DPI Penguin](https://github.com/zhivem/DPI-Penguin), доступная на GitHub. Обе версии направлены на удобный и эффективный способ обхода цензуры и DPI-фильтрации. 
 
 ## Возможности
 
