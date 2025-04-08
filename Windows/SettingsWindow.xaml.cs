@@ -17,8 +17,8 @@ namespace TrayPenguinDPI
     public partial class SettingsWindow : AdonisWindow
     {
         private static readonly string BlacklistPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Program", "Blacklist"));
-        private static readonly string IpsetUrl = "https://raw.githubusercontent.com/zhivem/traypenguindpi/refs/heads/main/blacklist/ipset-unlock.txt";
-        private static readonly string GeneralListUrl = "https://raw.githubusercontent.com/zhivem/traypenguindpi/refs/heads/main/blacklist/list-general.txt";
+        private static readonly string IpsetUrl = "https://raw.githubusercontent.com/zhivem/TrayPenguinDPI/refs/heads/master/blacklist/ipset-unlock.txt";
+        private static readonly string GeneralListUrl = "https://raw.githubusercontent.com/zhivem/TrayPenguinDPI/refs/heads/master/blacklist/list-general.txt";
         private bool _isDarkTheme = false;
 
         public SettingsWindow()

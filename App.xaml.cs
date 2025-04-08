@@ -16,8 +16,8 @@ namespace TrayPenguinDPI
     public partial class App : System.Windows.Application
     {
         private const string MutexName = "TrayPenguinDPIMutex";
-        private const string _ipsetUrl = "https://github.com/zhivem/TrayPenguinDPI/raw/refs/heads/master/blacklist/ipset-unlock.txt";
-        private const string _generalListUrl = "https://github.com/zhivem/TrayPenguinDPI/raw/refs/heads/master/blacklist/list-general.txt";
+        private const string _ipsetUrl = "https://raw.githubusercontent.com/zhivem/TrayPenguinDPI/refs/heads/master/blacklist/ipset-unlock.txt";
+        private const string _generalListUrl = "https://raw.githubusercontent.com/zhivem/TrayPenguinDPI/refs/heads/master/blacklist/list-general.txt";
 
         private static readonly string _zapretPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Program", "Zapret"));
         private static readonly string _blacklistPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Program", "Blacklist"));
