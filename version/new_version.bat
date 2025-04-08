@@ -95,7 +95,7 @@ echo          [OK] Temporary files removed
 timeout /t 1 /nobreak >nul
 
 :: Launch updated program
-echo [STEP 7] Launching TreyPenguinDPI...
+echo [STEP 7] Launching TrayPenguinDPI...
 start TrayPenguinDPI.exe
 echo          [OK] Program launched
 
