@@ -1,0 +1,69 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net9.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UseWPF>true</UseWPF>
+		<ApplicationIcon>penguin_icon.ico</ApplicationIcon>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<!-- Целевая платформа -->
+		<PublishSingleFile>true</PublishSingleFile>
+		<!-- Один .exe со всеми DLL -->
+		<SelfContained>false</SelfContained>
+		<!-- Без .NET Runtime -->
+		<IncludeAllContentForSelfExtract>false</IncludeAllContentForSelfExtract>
+		<!-- Не встраивать контент -->
+		<PublishTrimmed>false</PublishTrimmed>
+		<!-- Не обрезать зависимости -->
+		<DebugType>embedded</DebugType>
+		<!-- Встроить отладочные символы -->
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<!-- Включить нативные библиотеки -->
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="Program\Assets\Images\start.png" />
+		<None Remove="Program\Assets\Images\stop.png" />
+		<None Remove="Program\Resources\Resources.en.xaml" />
+		<None Remove="Program\Resources\Resources.ru.xaml" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="penguin_icon.ico">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Program\Assets\Images\start.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Program\Assets\Images\stop.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Program\Resources\Resources.en.xaml">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Program\Resources\Resources.ru.xaml">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AdonisUI" Version="1.17.1" />
+		<PackageReference Include="AdonisUI.ClassicTheme" Version="1.17.1" />
+		<PackageReference Include="NotifyIconEx" Version="1.1.2" />
+		<PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.3" />
+		<PackageReference Include="System.Drawing.Common" Version="9.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Update="Resources\Resources.en.xaml">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Page>
+	  <Page Update="Theme\DarkTheme.xaml">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Page>
+	  <Page Update="Theme\LightTheme.xaml">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </Page>
+	</ItemGroup>
+</Project>

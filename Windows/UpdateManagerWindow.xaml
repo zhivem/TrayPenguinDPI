@@ -1,0 +1,55 @@
+﻿<adonisControls:AdonisWindow x:Class="TreyPenguinDPI.UpdateManagerWindow"
+                             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                             xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+                             xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+                             Title="{DynamicResource UpdateManagerTitle}"
+                             Height="251"
+                             Width="570"
+                             ResizeMode="NoResize"
+                             WindowStartupLocation="CenterScreen">
+
+    <adonisControls:AdonisWindow.Style>
+        <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type Window}}"/>
+    </adonisControls:AdonisWindow.Style>
+
+    <Grid Margin="{adonisUi:Space 2}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Текст обновлений -->
+        <TextBox x:Name="UpdateTextBox"
+                 IsReadOnly="True"
+                 VerticalScrollBarVisibility="Auto"
+                 VerticalContentAlignment="Top"
+                 TextWrapping="Wrap"
+                 FontFamily="Consolas"
+                 FontSize="14"
+                 Grid.Row="0"/>
+
+        <!-- Кнопки действий -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,8">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,10,0">
+                <Button Content="{DynamicResource CheckUpdatesButton}"
+                        Width="150"
+                        Height="30"
+                        Click="CheckUpdates_Click"
+                        Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"
+                        Margin="0,0,8,0"/>
+                <Button x:Name="InstallButton"
+                        Content="{DynamicResource Install}"
+                        Width="120"
+                        Height="30"
+                        Click="Install_Click"
+                        Visibility="Collapsed"
+                        Margin="0,0,8,0"/>
+                <Button Content="{DynamicResource Reinstall}"
+                        Width="184"
+                        Height="30"
+                        Click="Reinstall_Click"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</adonisControls:AdonisWindow>

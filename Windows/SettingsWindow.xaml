@@ -1,0 +1,228 @@
+﻿<adonisControls:AdonisWindow x:Class="TreyPenguinDPI.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
+        xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+        Title="{DynamicResource SettingsTitle}"
+        Height="510"
+        Width="683"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen">
+
+    <adonisControls:AdonisWindow.Style>
+        <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type Window}}"/>
+    </adonisControls:AdonisWindow.Style>
+
+    <Grid Margin="{adonisUi:Space 2}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Основное -->
+        <GroupBox Header="{DynamicResource Main}"
+                 Grid.Row="0"
+                 Grid.Column="0"
+                 Margin="0,0,10,10"
+                 Padding="{adonisUi:Space 1}">
+            <StackPanel>
+                <CheckBox x:Name="AutoStartCheckBox"
+                          Content="{DynamicResource AutoStart}"
+                          Margin="0,0,0,5"
+                          HorizontalAlignment="Left"/>
+                <CheckBox x:Name="LastConfigCheckBox"
+                          Content="{DynamicResource LastConfig}"
+                          Margin="0,0,0,5"
+                          HorizontalAlignment="Left"/>
+                <CheckBox x:Name="DisableNotificationsCheckBox"
+                          Content="{DynamicResource DisableNotifications}"
+                          Margin="0,0,0,5"
+                          HorizontalAlignment="Left"/>
+                <CheckBox x:Name="UpdateBlacklistCheckBox"
+                          Content="{DynamicResource UpdateBlacklist}"
+                          Margin="0,0,0,5"
+                          HorizontalAlignment="Left"/>
+                <CheckBox x:Name="SyncThemeCheckBox"
+                          Content="{DynamicResource SyncTheme}"
+                          Margin="0,0,0,5"
+                          HorizontalAlignment="Left"
+                          Checked="SyncThemeCheckBox_Changed"
+                          Unchecked="SyncThemeCheckBox_Changed"/>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,5,0,0">
+                    <Button Content="{DynamicResource Save}"
+                            MinWidth="100"
+                            Height="30"
+                            Margin="0,0,5,0"
+                            Padding="10,0"
+                            Click="OkButton_Click"
+                            Foreground="White"
+                            Style="{DynamicResource {x:Static adonisUi:Styles.AccentButton}}"/>
+                    <Button x:Name="ToggleThemeButton"
+                            Content="{DynamicResource ToggleTheme}"
+                            MinWidth="237"
+                            Height="30"
+                            Margin="0,0,5,0"
+                            Padding="10,0"
+                            Click="ToggleThemeButton_Click"/>
+                    <Button Content="{DynamicResource DNS}"
+                            MinWidth="99"
+                            Height="30"
+                            Padding="10,0"
+                            Click="DnsButton_Click"/>
+                </StackPanel>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Язык -->
+        <GroupBox Header="{DynamicResource Language}"
+                 Grid.Row="0"
+                 Grid.Column="1"
+                 Margin="0,0,0,10"
+                 Padding="{adonisUi:Space 1}">
+            <StackPanel Orientation="Vertical">
+                <ComboBox x:Name="LanguageComboBox"
+                          SelectionChanged="LanguageComboBox_SelectionChanged"
+                          SelectedIndex="0"
+                          HorizontalAlignment="Stretch"
+                          Height="26"
+                          Margin="0,0,0,5">
+                    <ComboBoxItem Content="Русский" Tag="ru"/>
+                    <ComboBoxItem Content="English" Tag="en"/>
+                </ComboBox>
+                <Button Content="{DynamicResource Config}"
+                        MinWidth="120"
+                        Height="30"
+                        Margin="0,0,0,5"
+                        HorizontalAlignment="Stretch"
+                        Padding="10,0"
+                        Click="OpenStrategFolderButton_Click"/>
+                <Button Content="{DynamicResource List}"
+                        MinWidth="120"
+                        Height="30"
+                        Margin="0,0,0,5"
+                        HorizontalAlignment="Stretch"
+                        Padding="10,0"
+                        Click="OpenBlacklistFolderButton_Click"/>
+                <Button Content="{DynamicResource UninstallButton}"
+                        MinWidth="120"
+                        Height="30"
+                        Margin="0,0,0,5"
+                        HorizontalAlignment="Stretch"
+                        Padding="10,0"
+                        Click="UninstallButton_Click"
+                        Background="#800020"
+                        Foreground="White"/>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Службы -->
+        <GroupBox Header="{DynamicResource Services}"
+                 Grid.Row="1"
+                 Grid.Column="0"
+                 Margin="0,0,10,0"
+                 Padding="{adonisUi:Space 1}">
+            <StackPanel Orientation="Vertical">
+                <Button Content="{DynamicResource CreateService}"
+                       MinWidth="150"
+                       Height="30"
+                       Margin="{adonisUi:Space 0, 0, 0, 1}"
+                       HorizontalAlignment="Stretch"
+                       Padding="10,0"
+                       Click="CreateServiceButton_Click"/>
+                <Button Content="{DynamicResource DeleteService}"
+                       MinWidth="150"
+                       Height="30"
+                       HorizontalAlignment="Stretch"
+                       Padding="10,0"
+                       Click="DeleteServiceButton_Click"/>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Обновления -->
+        <GroupBox Header="{DynamicResource Updates}"
+                 Grid.Row="1"
+                 Grid.Column="1"
+                 Margin="0,0,0,0"
+                 Padding="{adonisUi:Space 1}">
+            <StackPanel Orientation="Vertical">
+                <Button x:Name="UpdateBlacklistButton"
+                       Content="{DynamicResource UpdateBlacklistButton}"
+                       MinWidth="150"
+                       Height="30"
+                       Margin="{adonisUi:Space 0, 0, 0, 1}"
+                       HorizontalAlignment="Stretch"
+                       Padding="10,0"
+                       Click="UpdateBlacklistButton_Click"/>
+                <Button x:Name="CheckUpdatesButton"
+                       Content="{DynamicResource CheckUpdates}"
+                       MinWidth="150"
+                       Height="30"
+                       HorizontalAlignment="Stretch"
+                       Padding="10,0"
+                       Click="CheckUpdatesButton_Click"/>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Подробности -->
+        <GroupBox Header="{DynamicResource Details}"
+                 Grid.Row="3"
+                 Grid.Column="0"
+                 Grid.ColumnSpan="2"
+                 Margin="0,10,0,0"
+                 Padding="{adonisUi:Space 1}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Версия и базовая информация -->
+                <StackPanel Grid.Row="0" Grid.Column="0">
+                    <TextBlock Text="{Binding ApplicationVersion}"/>
+                    <TextBlock Text="{DynamicResource Developer}"/>
+                    <TextBlock>
+                        <Run Text="{DynamicResource GitHubRepository}"/>
+                        <Hyperlink NavigateUri="https://github.com/Zhivem"
+                                  RequestNavigate="Hyperlink_RequestNavigate">
+                            DPI Penguin
+                        </Hyperlink>
+                    </TextBlock>
+                </StackPanel>
+
+                <!-- Конфигурации -->
+                <StackPanel Grid.Row="0" Grid.Column="1">
+                    <TextBlock Text="{DynamicResource ConfigVersionTitle}"/>
+                    <TextBlock Text="{Binding ConfigVersion}"/>
+                    <TextBlock Text="MIT license"/>
+                </StackPanel>
+
+                <!-- Разделитель -->
+                <Separator Grid.Row="2" 
+                          Grid.Column="0" 
+                          Grid.ColumnSpan="2" 
+                          Margin="0,5,0,5"/>
+
+                <!-- Zapret -->
+                <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" 
+                     HorizontalAlignment="Center">
+                    <TextBlock x:Name="ZapretVersionTextBlock" 
+                    FontWeight="Bold" 
+                    Text="{Binding ZapretInfo}"
+                    TextAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</adonisControls:AdonisWindow>
