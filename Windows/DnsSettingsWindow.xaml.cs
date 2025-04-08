@@ -11,7 +11,7 @@ using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 
-namespace TreyPenguinDPI
+namespace TrayPenguinDPI
 {
     public partial class DnsSettingsWindow : AdonisWindow
     {

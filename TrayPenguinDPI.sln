@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35919.96 d17.13
+VisualStudioVersion = 17.13.35919.96
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreyPenguinDPI", "TreyPenguinDPI.csproj", "{CB154E0F-EF68-427F-B0B8-7A0682822919}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrayPenguinDPI", "TrayPenguinDPI.csproj", "{CB154E0F-EF68-427F-B0B8-7A0682822919}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

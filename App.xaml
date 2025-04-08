@@ -1,4 +1,4 @@
-﻿<Application x:Class="TreyPenguinDPI.App"
+﻿<Application x:Class="TrayPenguinDPI.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI">

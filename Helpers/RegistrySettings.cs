@@ -1,6 +1,6 @@
 ﻿using Microsoft.Win32;
 
-namespace TreyPenguinDPI.Helpers
+namespace TrayPenguinDPI.Helpers
 {
     public static class RegistrySettings
     {

@@ -4,9 +4,9 @@ using System.Net.Http;
 using System.Windows;
 using System.Windows.Navigation;
 using AdonisUI.Controls;
-using TreyPenguinDPI.Helpers;
+using TrayPenguinDPI.Helpers;
 
-namespace TreyPenguinDPI
+namespace TrayPenguinDPI
 {
     public partial class UpdateManagerWindow : AdonisWindow
     {

@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Resources;
 
-namespace TreyPenguinDPI.Helpers
+namespace TrayPenguinDPI.Helpers
 {
     public static class ResourceHelper
     {

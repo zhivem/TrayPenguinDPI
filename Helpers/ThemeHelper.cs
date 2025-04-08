@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace TreyPenguinDPI.Helpers
+namespace TrayPenguinDPI.Helpers
 {
     public static class ThemeHelper
     {

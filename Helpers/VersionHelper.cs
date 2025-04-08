@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace TreyPenguinDPI.Helpers
+namespace TrayPenguinDPI.Helpers
 {
     public static class VersionHelper
     {

@@ -6,13 +6,13 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Navigation;
 using AdonisUI.Controls;
-using TreyPenguinDPI.Helpers;
+using TrayPenguinDPI.Helpers;
 using MessageBox = AdonisUI.Controls.MessageBox;
 using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
 using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
 
-namespace TreyPenguinDPI
+namespace TrayPenguinDPI
 {
     public partial class SettingsWindow : AdonisWindow
     {

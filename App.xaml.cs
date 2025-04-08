@@ -8,14 +8,14 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Forms;
 using Microsoft.Win32;
-using TreyPenguinDPI.Helpers;
+using TrayPenguinDPI.Helpers;
 using NotifyIcon = NotifyIconEx.NotifyIcon;
 
-namespace TreyPenguinDPI
+namespace TrayPenguinDPI
 {
     public partial class App : System.Windows.Application
     {
-        private const string MutexName = "TreyPenguinDPIMutex";
+        private const string MutexName = "TrayPenguinDPIMutex";
         private const string _ipsetUrl = "https://raw.githubusercontent.com/zhivem/traypenguindpi/refs/heads/main/blacklist/ipset-unlock.txt";
         private const string _generalListUrl = "https://raw.githubusercontent.com/zhivem/traypenguindpi/refs/heads/main/blacklist/list-general.txt";
 
@@ -134,7 +134,7 @@ namespace TreyPenguinDPI
             if (!isNewInstance)
             {
                 AdonisUI.Controls.MessageBox.Show(
-                    GetResourceString("ApplicationAlreadyRunning") ?? "TreyPenguinDPI is already running.",
+                    GetResourceString("ApplicationAlreadyRunning") ?? "TrayPenguinDPI is already running.",
                     GetResourceString("InformationTitle") ?? "Information",
                     (AdonisUI.Controls.MessageBoxButton)MessageBoxButton.OK,
                     (AdonisUI.Controls.MessageBoxImage)MessageBoxImage.Information
@@ -177,7 +177,7 @@ namespace TreyPenguinDPI
             var mainModule = Process.GetCurrentProcess().MainModule;
             trayIcon = new NotifyIcon
             {
-                Text = "TreyPenguinDPI Control",
+                Text = "TrayPenguinDPI Control",
                 Icon = Icon.ExtractAssociatedIcon(mainModule.FileName),
                 Visible = true
             };
@@ -235,7 +235,7 @@ namespace TreyPenguinDPI
             await File.WriteAllTextAsync(Path.Combine(_blacklistPath, "ipset-unlock.txt"), await client.GetStringAsync(_ipsetUrl));
             await File.WriteAllTextAsync(Path.Combine(_blacklistPath, "list-general.txt"), await client.GetStringAsync(_generalListUrl));
             if (NotificationsEnabled)
-                ShowNotification("TreyPenguinDPI", "BlacklistsUpdated");
+                ShowNotification("TrayPenguinDPI", "BlacklistsUpdated");
         }
 
         private static async Task<bool> CheckForUpdatesAsync()
@@ -371,7 +371,7 @@ namespace TreyPenguinDPI
             _isRunning = false;
             UpdateMenuState();
             UpdateStrategyMenuState();
-            ShowNotification("TreyPenguinDPI", "ZapretStopped");
+            ShowNotification("TrayPenguinDPI", "ZapretStopped");
         }
 
         private static async void StartZapret_Click(object? sender, EventArgs? e)
@@ -396,7 +396,7 @@ namespace TreyPenguinDPI
                 Process process = StartProcess(executable, args);
                 _processList.Add(process);
                 _isRunning = true;
-                ShowNotification("TreyPenguinDPI", "ZapretStarted", _strategyNames[_currentStrategyIndex]);
+                ShowNotification("TrayPenguinDPI", "ZapretStarted", _strategyNames[_currentStrategyIndex]);
                 UpdateStrategyMenuState();
                 _ = StartProcessMonitoring();
                 UpdateMenuState();
@@ -419,7 +419,7 @@ namespace TreyPenguinDPI
 
             await ProcessHelper.CleanupProcessesAndServices();
 
-            ShowNotification("TreyPenguinDPI", "ZapretStopped");
+            ShowNotification("TrayPenguinDPI", "ZapretStopped");
             UpdateStrategyMenuState();
             UpdateMenuState();
         }
@@ -436,7 +436,7 @@ namespace TreyPenguinDPI
         {
             _currentStrategyIndex = strategyIndex;
             UpdateStrategyMenuState();
-            ShowNotification("TreyPenguinDPI", "StrategySelected", _strategyNames[_currentStrategyIndex]);
+            ShowNotification("TrayPenguinDPI", "StrategySelected", _strategyNames[_currentStrategyIndex]);
         }
 
         private static void Settings_Click(object? sender, EventArgs? e)
@@ -467,7 +467,7 @@ namespace TreyPenguinDPI
                 if (_processList.Any(p => p?.HasExited ?? true))
                 {
                     StopZapret_Click(null, null);
-                    ShowNotification("TreyPenguinDPI", "ProcessTerminated");
+                    ShowNotification("TrayPenguinDPI", "ProcessTerminated");
                     StartZapret_Click(null, null);
                     break;
                 }

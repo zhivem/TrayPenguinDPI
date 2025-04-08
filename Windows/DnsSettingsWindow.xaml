@@ -1,4 +1,4 @@
-﻿<controls:AdonisWindow x:Class="TreyPenguinDPI.DnsSettingsWindow"
+﻿<controls:AdonisWindow x:Class="TrayPenguinDPI.DnsSettingsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
