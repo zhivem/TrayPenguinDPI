@@ -4,7 +4,7 @@ color 0A
 
 :: Header
 echo ==========================================
-echo       TreyPenguinDPI Update Tool
+echo       TrayPenguinDPI Update Tool
 echo ==========================================
 echo Starting update process...
 timeout /t 1 /nobreak >nul
