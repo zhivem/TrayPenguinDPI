@@ -65,7 +65,7 @@ timeout /t 1 /nobreak >nul
 
 :: Download new version
 echo [STEP 4] Downloading new version...
-powershell -Command "Invoke-WebRequest -Uri 'https://github.com/zhivem/traypenguindpi/raw/refs/heads/main/update/program.zip' -OutFile 'program.zip'" >nul 2>&1
+powershell -Command "Invoke-WebRequest -Uri 'https://github.com/zhivem/TrayPenguinDPI/raw/refs/heads/master/update/program.zip' -OutFile 'program.zip'" >nul 2>&1
 if %ERRORLEVEL% neq 0 (
     echo          [FAILED] Download failed. See update_error.log
     echo Error: Failed to download archive. >> update_error.log
