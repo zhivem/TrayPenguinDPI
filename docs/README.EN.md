@@ -90,7 +90,7 @@ args =
 --dpi-desync=fake;
 ```
 
-## Technologies Used
+## Libraries used
 
 - **[NotifyIconEx](https://github.com/lemutec/NotifyIconEx)** —  Enhanced system tray icon component 
 - **[AdonisUI](https://github.com/benruehl/adonis-ui)** —  Modern UI framework for WPF
