@@ -4,8 +4,8 @@
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
         Title="{DynamicResource SettingsTitle}"
-        Height="510"
-        Width="683"
+        Height="543"
+        Width="706"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">
 
