@@ -93,7 +93,7 @@ args =
 --dpi-desync=fake;
 ```
 
-## Используемые технологии
+## Используемые библиотеки
 
 - **[NotifyIconEx](https://github.com/lemutec/NotifyIconEx)** — расширенный компонент для работы с иконкой в трее  
 - **[AdonisUI](https://github.com/benruehl/adonis-ui)** — современный UI-фреймворк для WPF  
