@@ -285,7 +285,7 @@ namespace TrayPenguinDPI
 
             trayIcon.BalloonTipTitle = title;
             trayIcon.BalloonTipText = text;
-            trayIcon.ShowBalloonTip(1000);
+            trayIcon.ShowBalloonTip(5000);
         }
 
         public static string ReplacePaths(string input)
