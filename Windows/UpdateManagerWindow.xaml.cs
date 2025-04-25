@@ -1,9 +1,9 @@
-﻿using System.IO;
+﻿using AdonisUI.Controls;
+using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
 using System.Windows;
 using System.Windows.Navigation;
-using AdonisUI.Controls;
 using TrayPenguinDPI.Helpers;
 
 namespace TrayPenguinDPI
@@ -16,7 +16,7 @@ namespace TrayPenguinDPI
         private bool _hasProgramUpdate;
         private bool _hasZapretUpdate;
         private bool _hasConfigUpdate;
-        private readonly string _iniPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Program", "Config", "setting.ini");
+        private readonly string _iniPath = Path.Combine(App.ConfigPath, "setting.ini");
 
         public UpdateManagerWindow()
         {
@@ -123,7 +123,7 @@ namespace TrayPenguinDPI
 
             try
             {
-                await ProcessHelper.CleanupProcessesAndServices();
+                await ProcessHelper.CleanupProcessesAndServicesAsync();
 
                 using var client = new HttpClient();
                 var response = await client.GetAsync(url);

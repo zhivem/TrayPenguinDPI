@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using AdonisUI.Controls;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using AdonisUI.Controls;
-using MessageBox = AdonisUI.Controls.MessageBox;
-using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
-using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
+using TrayPenguinDPI.Helpers;
 
 namespace TrayPenguinDPI
 {
@@ -36,20 +29,8 @@ namespace TrayPenguinDPI
         {
             try
             {
-                var process = new Process
-                {
-                    StartInfo = new ProcessStartInfo
-                    {
-                        FileName = "netsh",
-                        Arguments = "interface show interface",
-                        RedirectStandardOutput = true,
-                        UseShellExecute = false,
-                        CreateNoWindow = true
-                    }
-                };
-                process.Start();
-                string output = process.StandardOutput.ReadToEnd();
-                process.WaitForExit();
+                var (exitCode, output) = await ProcessHelper.RunProcessWithOutputAsync("netsh", "interface show interface");
+                if (exitCode != 0) throw new InvalidOperationException("Failed to fetch interfaces");
 
                 var lines = output.Split('\n', StringSplitOptions.RemoveEmptyEntries);
                 foreach (var line in lines)
@@ -65,18 +46,13 @@ namespace TrayPenguinDPI
                 if (InterfaceComboBox.Items.Count == 0)
                 {
                     InterfaceComboBox.Items.Add("Ethernet");
-                    Log(App.GetResourceString("WarningNoInterfaces"));
+                    App.ShowWarningMessage(App.GetResourceString("WarningNoInterfaces"));
                 }
             }
             catch (Exception ex)
             {
-                Log(string.Format(App.GetResourceString("ErrorFetchingInterfaces"), ex.Message));
                 InterfaceComboBox.Items.Add("Ethernet");
-                MessageBox.Show(
-                    string.Format(App.GetResourceString("ErrorFetchingInterfaces"), ex.Message).Replace(". ", ".\n"),
-                    App.GetResourceString("ErrorTitle"),
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                App.ShowErrorMessage(string.Format(App.GetResourceString("ErrorFetchingInterfaces"), ex.Message));
             }
 
             InterfaceComboBox.SelectedIndex = 0;
@@ -91,20 +67,8 @@ namespace TrayPenguinDPI
                 string secondaryDns = "Не определен";
                 bool isDhcp = false;
 
-                var process = new Process
-                {
-                    StartInfo = new ProcessStartInfo
-                    {
-                        FileName = "netsh",
-                        Arguments = $"interface ip show dns name=\"{interfaceName}\"",
-                        RedirectStandardOutput = true,
-                        UseShellExecute = false,
-                        CreateNoWindow = true
-                    }
-                };
-                process.Start();
-                string output = await process.StandardOutput.ReadToEndAsync();
-                await Task.Run(() => process.WaitForExit());
+                var (exitCode, output) = await ProcessHelper.RunProcessWithOutputAsync("netsh", $"interface ip show dns name=\"{interfaceName}\"");
+                if (exitCode != 0) throw new InvalidOperationException("Failed to fetch DNS");
 
                 var lines = output.Split('\n', StringSplitOptions.RemoveEmptyEntries);
                 foreach (var line in lines)
@@ -130,11 +94,8 @@ namespace TrayPenguinDPI
 
                 if (primaryDns == "Не определен" && !isDhcp)
                 {
-                    process.StartInfo.FileName = "ipconfig";
-                    process.StartInfo.Arguments = "/all";
-                    process.Start();
-                    output = await process.StandardOutput.ReadToEndAsync();
-                    await Task.Run(() => process.WaitForExit());
+                    (exitCode, output) = await ProcessHelper.RunProcessWithOutputAsync("ipconfig", "/all");
+                    if (exitCode != 0) throw new InvalidOperationException("Failed to fetch DNS via ipconfig");
 
                     lines = output.Split('\n', StringSplitOptions.RemoveEmptyEntries);
                     bool foundInterface = false;
@@ -177,9 +138,8 @@ namespace TrayPenguinDPI
                     SecondaryDnsTextBlock.Text = secondaryDns;
                 });
             }
-            catch (Exception ex)
+            catch
             {
-                Log(string.Format(App.GetResourceString("ErrorFetchingDns"), ex.Message));
                 await Dispatcher.InvokeAsync(() =>
                 {
                     PrimaryDnsTextBlock.Text = "Ошибка";
@@ -200,7 +160,6 @@ namespace TrayPenguinDPI
         {
             if (DnsComboBox.SelectedItem is ComboBoxItem item && item.Content != null && _dnsServers.TryGetValue(item.Content.ToString() ?? string.Empty, out var dns))
             {
-                Log(string.Format(App.GetResourceString("DnsProviderSelected"), item.Content.ToString()));
                 SelectedPrimaryDnsTextBox.Text = dns.Primary == "" ? "Не выбрано" : dns.Primary;
                 SelectedSecondaryDnsTextBox.Text = dns.Secondary == "" ? "Не выбрано" : dns.Secondary;
             }
@@ -215,11 +174,7 @@ namespace TrayPenguinDPI
         {
             if (InterfaceComboBox.SelectedItem == null || DnsComboBox.SelectedItem == null)
             {
-                MessageBox.Show(
-                    App.GetResourceString("SelectInterfaceAndProvider"),
-                    App.GetResourceString("ErrorTitle"),
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
+                App.ShowWarningMessage(App.GetResourceString("SelectInterfaceAndProvider"));
                 return;
             }
 
@@ -227,8 +182,6 @@ namespace TrayPenguinDPI
             string? dnsChoice = (DnsComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
             string primaryDns = SelectedPrimaryDnsTextBox.Text;
             string secondaryDns = SelectedSecondaryDnsTextBox.Text;
-
-            Log(string.Format(App.GetResourceString("ApplyingDns"), interfaceName, dnsChoice));
 
             try
             {
@@ -241,12 +194,7 @@ namespace TrayPenguinDPI
             }
             catch (Exception ex)
             {
-                Log(string.Format(App.GetResourceString("ErrorApplyingDns"), ex.Message));
-                MessageBox.Show(
-                    string.Format(App.GetResourceString("FailedToApplyDns"), ex.Message).Replace(". ", ".\n"),
-                    App.GetResourceString("ErrorTitle"),
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                App.ShowErrorMessage(string.Format(App.GetResourceString("FailedToApplyDns"), ex.Message));
             }
         }
 
@@ -254,16 +202,11 @@ namespace TrayPenguinDPI
         {
             if (InterfaceComboBox.SelectedItem == null)
             {
-                MessageBox.Show(
-                    App.GetResourceString("SelectInterface"),
-                    App.GetResourceString("ErrorTitle"),
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
+                App.ShowWarningMessage(App.GetResourceString("SelectInterface"));
                 return;
             }
 
             string interfaceName = InterfaceComboBox.SelectedItem.ToString() ?? string.Empty;
-            Log(string.Format(App.GetResourceString("ClearingDns"), interfaceName));
 
             try
             {
@@ -272,132 +215,44 @@ namespace TrayPenguinDPI
             }
             catch (Exception ex)
             {
-                Log(string.Format(App.GetResourceString("ErrorClearingDns"), ex.Message));
-                MessageBox.Show(
-                    string.Format(App.GetResourceString("FailedToClearDns"), ex.Message).Replace(". ", ".\n"),
-                    App.GetResourceString("ErrorTitle"),
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                App.ShowErrorMessage(string.Format(App.GetResourceString("FailedToClearDns"), ex.Message));
             }
         }
 
         private async Task SetDnsAsync(string interfaceName, string primaryDns, string secondaryDns)
         {
-            try
+            if (string.IsNullOrWhiteSpace(primaryDns) || primaryDns == "Не выбрано")
+                throw new Exception("Preferred DNS server not specified.");
+
+            var (exitCode, _) = await ProcessHelper.RunProcessWithOutputAsync("netsh", $"interface ip set dns name=\"{interfaceName}\" source=static address={primaryDns}");
+            if (exitCode != 0) throw new InvalidOperationException("Failed to set primary DNS");
+
+            if (!string.IsNullOrEmpty(secondaryDns) && secondaryDns != "Не выбрано")
             {
-                if (string.IsNullOrWhiteSpace(primaryDns) || primaryDns == "Не выбрано")
-                    throw new Exception("Не указан предпочитаемый DNS-сервер.");
-
-                var process = new Process
-                {
-                    StartInfo = new ProcessStartInfo
-                    {
-                        FileName = "netsh",
-                        Arguments = $"interface ip set dns name=\"{interfaceName}\" source=static address={primaryDns}",
-                        RedirectStandardOutput = true,
-                        UseShellExecute = false,
-                        CreateNoWindow = true
-                    }
-                };
-                process.Start();
-                await process.StandardOutput.ReadToEndAsync();
-                await Task.Run(() => process.WaitForExit());
-
-                Log(string.Format(App.GetResourceString("PrimaryDnsSetSuccess"), primaryDns));
-
-                if (!string.IsNullOrEmpty(secondaryDns) && secondaryDns != "Не выбрано")
-                {
-                    process.StartInfo.Arguments = $"interface ip add dns name=\"{interfaceName}\" address={secondaryDns} index=2";
-                    process.Start();
-                    await process.StandardOutput.ReadToEndAsync();
-                    await Task.Run(() => process.WaitForExit());
-
-                    Log(string.Format(App.GetResourceString("SecondaryDnsSetSuccess"), secondaryDns));
-                }
-            }
-            catch (Exception ex)
-            {
-                Log(string.Format(App.GetResourceString("ErrorSettingDns"), ex.Message));
-                throw;
+                (exitCode, _) = await ProcessHelper.RunProcessWithOutputAsync("netsh", $"interface ip add dns name=\"{interfaceName}\" address={secondaryDns} index=2");
+                if (exitCode != 0) throw new InvalidOperationException("Failed to set secondary DNS");
             }
         }
 
         private async Task ClearDnsAsync(string interfaceName)
         {
-            try
-            {
-                var process = new Process
-                {
-                    StartInfo = new ProcessStartInfo
-                    {
-                        FileName = "netsh",
-                        Arguments = $"interface ip set dns name=\"{interfaceName}\" source=dhcp",
-                        RedirectStandardOutput = true,
-                        UseShellExecute = false,
-                        CreateNoWindow = true
-                    }
-                };
-                process.Start();
-                await process.StandardOutput.ReadToEndAsync();
-                await Task.Run(() => process.WaitForExit());
-
-                Log(string.Format(App.GetResourceString("DnsClearedSuccess"), interfaceName));
-            }
-            catch (Exception ex)
-            {
-                Log(string.Format(App.GetResourceString("ErrorClearingDns"), ex.Message));
-                throw;
-            }
+            var (exitCode, _) = await ProcessHelper.RunProcessWithOutputAsync("netsh", $"interface ip set dns name=\"{interfaceName}\" source=dhcp");
+            if (exitCode != 0) throw new InvalidOperationException("Failed to clear DNS");
         }
 
         private async void FlushDnsButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                var process = new Process
-                {
-                    StartInfo = new ProcessStartInfo
-                    {
-                        FileName = "ipconfig",
-                        Arguments = "/flushdns",
-                        RedirectStandardOutput = true,
-                        UseShellExecute = false,
-                        CreateNoWindow = true
-                    }
-                };
-                process.Start();
-                await process.StandardOutput.ReadToEndAsync();
-                await Task.Run(() => process.WaitForExit());
-
-                Log(App.GetResourceString("DnsCacheClearedSuccess"));
+                var (exitCode, _) = await ProcessHelper.RunProcessWithOutputAsync("ipconfig", "/flushdns");
+                if (exitCode != 0) throw new InvalidOperationException("Failed to flush DNS cache");
             }
             catch (Exception ex)
             {
-                Log(string.Format(App.GetResourceString("ErrorFlushingDnsCache"), ex.Message));
-                MessageBox.Show(
-                    string.Format(App.GetResourceString("FailedToFlushDnsCache"), ex.Message).Replace(". ", ".\n"),
-                    App.GetResourceString("ErrorTitle"),
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                App.ShowErrorMessage(string.Format(App.GetResourceString("FailedToFlushDnsCache"), ex.Message));
             }
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
-
-        private void Log(string message)
-        {
-            try
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    LogTextBox.AppendText($"{DateTime.Now:HH:mm:ss}: {message}\n");
-                    LogTextBox.ScrollToEnd();
-                });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка логирования: {ex.Message}");
-            }
-        }
     }
 }

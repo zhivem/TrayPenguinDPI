@@ -196,7 +196,7 @@
                         <Run Text="{DynamicResource GitHubRepository}"/>
                         <Hyperlink NavigateUri="https://github.com/Zhivem"
                                   RequestNavigate="Hyperlink_RequestNavigate">
-                            DPI Penguin
+                            Zhivem 😔
                         </Hyperlink>
                     </TextBlock>
                 </StackPanel>

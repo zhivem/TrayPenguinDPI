@@ -12,7 +12,6 @@ namespace TrayPenguinDPI.Helpers
 
         public static int CompareVersions(string current, string latest)
         {
-            
             string NormalizeVersion(string version)
             {
                 if (string.IsNullOrWhiteSpace(version) || version == "Неизвестно")
@@ -30,11 +29,7 @@ namespace TrayPenguinDPI.Helpers
                 Version v2 = new Version(NormalizeVersion(latest));
                 return v1.CompareTo(v2);
             }
-            catch (ArgumentException)
-            {
-                return -1;
-            }
-            catch (Exception)
+            catch
             {
                 return -1;
             }
