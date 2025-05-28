@@ -3,16 +3,17 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
         Title="{DynamicResource DnsSettingsTitle}" 
-        Height="600" 
+        Height="650" 
         Width="550"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize">
-    <Grid Margin="10">
+    <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="*" MinHeight="100"/>
+            <!-- Строка для логов -->
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -20,11 +21,10 @@
         </Grid.ColumnDefinitions>
 
         <!-- Сетевой интерфейс с выбором DNS -->
-        <GroupBox Header="{DynamicResource NetworkInterfaceGroup}" Grid.Row="0" Grid.Column="0" Margin="0,0,5,10">
-            <StackPanel Margin="5">
+        <GroupBox Header="{DynamicResource NetworkInterfaceGroup}" Grid.Row="0" Grid.Column="0" Margin="0,0,7,15">
+            <StackPanel Margin="10">
                 <TextBlock Text="{DynamicResource SelectNetworkInterface}" Margin="0,0,0,5"/>
                 <ComboBox x:Name="InterfaceComboBox" SelectionChanged="InterfaceComboBox_SelectionChanged" Margin="0,0,0,10"/>
-
                 <TextBlock Text="{DynamicResource SelectDnsProvider}" Margin="0,0,0,5"/>
                 <ComboBox x:Name="DnsComboBox" SelectionChanged="DnsComboBox_SelectionChanged">
                     <ComboBoxItem Content="DNS по умолчанию"/>
@@ -39,8 +39,8 @@
         </GroupBox>
 
         <!-- Текущие DNS -->
-        <GroupBox Header="{DynamicResource CurrentDnsServersGroup}" Grid.Row="0" Grid.Column="1" Margin="5,0,0,10">
-            <StackPanel Margin="5">
+        <GroupBox Header="{DynamicResource CurrentDnsServersGroup}" Grid.Row="0" Grid.Column="1" Margin="7,0,0,15">
+            <StackPanel Margin="10">
                 <TextBlock Text="{DynamicResource PrimaryLabel}" Margin="0,0,0,5"/>
                 <TextBlock x:Name="PrimaryDnsTextBlock" Text="Не определен"/>
                 <TextBlock Text="{DynamicResource SecondaryLabel}" Margin="0,5,0,0"/>
@@ -49,25 +49,25 @@
         </GroupBox>
 
         <!-- Выбранные DNS -->
-        <GroupBox Header="{DynamicResource DnsParametersGroup}" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,0,0,10">
-            <Grid Margin="5">
+        <GroupBox Header="{DynamicResource DnsParametersGroup}" Grid.Row="1" Grid.ColumnSpan="2" Margin="0,0,0,15">
+            <Grid Margin="10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Margin="0,0,5,0">
+                <StackPanel Grid.Column="0" Margin="0,0,7,0">
                     <TextBlock Text="{DynamicResource PrimaryDnsLabel}" Margin="0,0,0,5"/>
-                    <TextBox x:Name="SelectedPrimaryDnsTextBox" Text="Не выбрано"/>
+                    <TextBox x:Name="SelectedPrimaryDnsTextBox" Text="Не выбрано" IsReadOnly="True"/>
                 </StackPanel>
-                <StackPanel Grid.Column="1" Margin="5,0,0,0">
+                <StackPanel Grid.Column="1" Margin="7,0,0,0">
                     <TextBlock Text="{DynamicResource SecondaryDnsLabel}" Margin="0,0,0,5"/>
-                    <TextBox x:Name="SelectedSecondaryDnsTextBox" Text="Не выбрано"/>
+                    <TextBox x:Name="SelectedSecondaryDnsTextBox" Text="Не выбрано" IsReadOnly="True"/>
                 </StackPanel>
             </Grid>
         </GroupBox>
 
         <!-- Действия -->
-        <GroupBox Header="{DynamicResource ActionsGroup}" Grid.Row="2" Grid.ColumnSpan="2" Margin="0,0,0,10">
+        <GroupBox Header="{DynamicResource ActionsGroup}" Grid.Row="2" Grid.ColumnSpan="2" Margin="0,0,0,15">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Content="{DynamicResource ApplyDnsButton}" Click="ApplyDnsButton_Click" Width="120" Margin="5"/>
                 <Button Content="{DynamicResource ClearDnsButton}" Click="ClearDnsButton_Click" Width="120" Margin="5"/>
@@ -77,8 +77,10 @@
 
         <!-- Логи -->
         <GroupBox Header="{DynamicResource LogsGroup}" Grid.Row="3" Grid.ColumnSpan="2">
-            <TextBox x:Name="LogTextBox" IsReadOnly="True" Margin="5" 
-                     VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" Height="120"/>
+            <TextBox x:Name="LogTextBox" IsReadOnly="True" Margin="10" 
+                     VerticalScrollBarVisibility="Auto" VerticalContentAlignment="Top" 
+                     MinHeight="80" MaxHeight="150" TextWrapping="Wrap"/>
+            <!-- Настроенная высота -->
         </GroupBox>
     </Grid>
 </controls:AdonisWindow>

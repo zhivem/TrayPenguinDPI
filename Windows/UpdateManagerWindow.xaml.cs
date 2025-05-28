@@ -17,14 +17,12 @@ namespace TrayPenguinDPI
         private bool _hasZapretUpdate;
         private bool _hasConfigUpdate;
         private readonly string _iniPath = Path.Combine(App.ConfigPath, "setting.ini");
-
+        public string GetLatestZapretVersion() => _latestZapretVersion;
         public UpdateManagerWindow()
         {
             InitializeComponent();
             Loaded += async (_, _) => await CheckUpdatesAsync();
         }
-
-        public string GetLatestZapretVersion() => _latestZapretVersion;
 
         private async Task CheckUpdatesAsync()
         {

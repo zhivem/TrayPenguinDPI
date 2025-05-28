@@ -1,7 +1,6 @@
 ﻿using AdonisUI.Controls;
 using System.Diagnostics;
 using System.IO;
-using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -14,6 +13,7 @@ namespace TrayPenguinDPI
 {
     public partial class SettingsWindow : AdonisWindow
     {
+        private void UpdateThemeButtonState() => ToggleThemeButton.IsEnabled = !SyncThemeCheckBox.IsChecked.GetValueOrDefault();
         private bool _isDarkTheme = false;
 
         public SettingsWindow()
@@ -131,8 +131,6 @@ namespace TrayPenguinDPI
                 ZapretVersionTextBlock.Inlines.Add(hyperlink);
             }
         }
-
-        private void UpdateThemeButtonState() => ToggleThemeButton.IsEnabled = !SyncThemeCheckBox.IsChecked.GetValueOrDefault();
 
         private void LanguageComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

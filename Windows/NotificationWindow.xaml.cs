@@ -1,8 +1,6 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
-using System.Linq;
 using System.Windows.Media.Imaging;
 
 namespace TrayPenguinDPI
