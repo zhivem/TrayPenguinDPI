@@ -62,7 +62,7 @@ namespace TrayPenguinDPI
 
         public static string GetResourceString(string key) => Current.TryFindResource(key) as string ?? key;
 
-        public static void ShowErrorMessage(string message, string title = null)
+        public static void ShowErrorMessage(string message, string? title = null)
         {
             AdonisUI.Controls.MessageBox.Show(
                 message.Replace(". ", ".\n"),
@@ -71,7 +71,7 @@ namespace TrayPenguinDPI
                 AdonisUI.Controls.MessageBoxImage.Error);
         }
 
-        public static void ShowWarningMessage(string message, string title = null)
+        public static void ShowWarningMessage(string message, string? title = null)
         {
             AdonisUI.Controls.MessageBox.Show(
                 message.Replace(". ", ".\n"),

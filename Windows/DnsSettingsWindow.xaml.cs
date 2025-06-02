@@ -1,5 +1,8 @@
 ﻿using AdonisUI.Controls;
+using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using TrayPenguinDPI.Helpers;
@@ -25,17 +28,19 @@ namespace TrayPenguinDPI
             PopulateInterfaceList();
         }
 
-        private async void PopulateInterfaceList()
+        private async void PopulateInterfaceList(object? sender = null, EventArgs? e = null)
         {
             try
             {
                 LogMessage("Получение списка сетевых интерфейсов...");
                 var (exitCode, output) = await ProcessHelper.RunProcessWithOutputAsync("netsh", "interface show interface");
+
                 if (exitCode != 0)
                     throw new InvalidOperationException("Не удалось получить список интерфейсов.");
 
-                var lines = output.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-                foreach (var line in lines)
+                InterfaceComboBox.Items.Clear();
+
+                foreach (var line in output.Split('\n', StringSplitOptions.RemoveEmptyEntries))
                 {
                     if (line.Contains("Подключен") || line.Contains("Connected"))
                     {
@@ -57,6 +62,7 @@ namespace TrayPenguinDPI
             }
             catch (Exception ex)
             {
+                InterfaceComboBox.Items.Clear();
                 InterfaceComboBox.Items.Add("Ethernet");
                 LogMessage($"Ошибка при получении интерфейсов: {ex.Message}");
                 App.ShowErrorMessage(string.Format(App.GetResourceString("ErrorFetchingInterfaces"), ex.Message));
@@ -68,22 +74,24 @@ namespace TrayPenguinDPI
             try
             {
                 LogMessage($"Обновление текущих DNS для интерфейса '{interfaceName}'...");
-                string primaryDns = "Не определен";
-                string secondaryDns = "Не определен";
-                bool isDhcp = false;
 
                 var (exitCode, output) = await ProcessHelper.RunProcessWithOutputAsync("netsh", $"interface ip show dns name=\"{interfaceName}\"");
-                if (exitCode != 0)
-                    throw new InvalidOperationException("Не удалось получить DNS.");
 
-                var lines = output.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-                foreach (var line in lines)
+                if (exitCode != 0)
+                    throw new InvalidOperationException("Не удалось получить DNS через netsh.");
+
+                bool isDhcp = false;
+                string primaryDns = "Не определен";
+                string secondaryDns = "Не определен";
+
+                foreach (var line in output.Split('\n', StringSplitOptions.RemoveEmptyEntries))
                 {
                     if (line.Contains("DHCP") || line.Contains("автоматически"))
                     {
                         isDhcp = true;
                         break;
                     }
+
                     if (line.Contains("статически") || line.Contains("DNS-серверы"))
                     {
                         var match = Regex.Match(line, @"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|([0-9a-fA-F:]+:[0-9a-fA-F:]+)");
@@ -100,36 +108,11 @@ namespace TrayPenguinDPI
 
                 if (primaryDns == "Не определен" && !isDhcp)
                 {
-                    (exitCode, output) = await ProcessHelper.RunProcessWithOutputAsync("ipconfig", "/all");
-                    if (exitCode != 0)
-                        throw new InvalidOperationException("Не удалось получить DNS через ipconfig.");
-
-                    lines = output.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-                    bool foundInterface = false;
-                    foreach (var line in lines)
+                    // Резервный метод через ipconfig
+                    var (exitCode2, output2) = await ProcessHelper.RunProcessWithOutputAsync("ipconfig", "/all");
+                    if (exitCode2 == 0)
                     {
-                        if (line.Contains(interfaceName))
-                            foundInterface = true;
-                        if (foundInterface && (line.Contains("DNS Servers") || line.Contains("DNS-серверы")))
-                        {
-                            var match = Regex.Match(line, @"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|([0-9a-fA-F:]+:[0-9a-fA-F:]+)");
-                            if (match.Success)
-                            {
-                                primaryDns = match.Value;
-                                int index = Array.IndexOf(lines, line);
-                                for (int i = index + 1; i < lines.Length; i++)
-                                {
-                                    var nextMatch = Regex.Match(lines[i], @"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|([0-9a-fA-F:]+:[0-9a-fA-F:]+)");
-                                    if (nextMatch.Success)
-                                    {
-                                        secondaryDns = nextMatch.Value;
-                                        break;
-                                    }
-                                    if (!string.IsNullOrWhiteSpace(lines[i]) && !lines[i].Contains(" ")) break;
-                                }
-                            }
-                            break;
-                        }
+                        (primaryDns, secondaryDns) = ParseDnsFromIpConfig(output2, interfaceName);
                     }
                 }
 
@@ -157,6 +140,51 @@ namespace TrayPenguinDPI
             }
         }
 
+        private (string Primary, string Secondary) ParseDnsFromIpConfig(string output, string interfaceName)
+        {
+            string primaryDns = "Не определен";
+            string secondaryDns = "Не определен";
+            bool foundInterface = false;
+
+            var lines = output.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                var line = lines[i];
+
+                if (line.Contains(interfaceName))
+                    foundInterface = true;
+
+                if (!foundInterface) continue;
+
+                if (line.Contains("DNS Servers") || line.Contains("DNS-серверы"))
+                {
+                    var match = Regex.Match(line, @"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|([0-9a-fA-F:]+:[0-9a-fA-F:]+)");
+                    if (match.Success)
+                    {
+                        primaryDns = match.Value;
+
+                        for (int j = i + 1; j < lines.Length; j++)
+                        {
+                            var nextMatch = Regex.Match(lines[j], @"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|([0-9a-fA-F:]+:[0-9a-fA-F:]+)");
+                            if (nextMatch.Success)
+                            {
+                                secondaryDns = nextMatch.Value;
+                                break;
+                            }
+
+                            if (!lines[j].Contains(" "))
+                                break;
+                        }
+
+                        break;
+                    }
+                }
+            }
+
+            return (primaryDns, secondaryDns);
+        }
+
         private void InterfaceComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (InterfaceComboBox.SelectedItem != null)
@@ -170,8 +198,8 @@ namespace TrayPenguinDPI
         {
             if (DnsComboBox.SelectedItem is ComboBoxItem item && item.Content != null && _dnsServers.TryGetValue(item.Content.ToString() ?? string.Empty, out var dns))
             {
-                SelectedPrimaryDnsTextBox.Text = dns.Primary == "" ? "Не выбрано" : dns.Primary;
-                SelectedSecondaryDnsTextBox.Text = dns.Secondary == "" ? "Не выбрано" : dns.Secondary;
+                SelectedPrimaryDnsTextBox.Text = string.IsNullOrEmpty(dns.Primary) ? "Не выбрано" : dns.Primary;
+                SelectedSecondaryDnsTextBox.Text = string.IsNullOrEmpty(dns.Secondary) ? "Не выбрано" : dns.Secondary;
                 LogMessage($"Выбран провайдер DNS: {item.Content}, Основной = {dns.Primary}, Вторичный = {dns.Secondary}");
             }
             else
@@ -199,14 +227,18 @@ namespace TrayPenguinDPI
             try
             {
                 LogMessage($"Применение DNS для интерфейса '{interfaceName}': Основной = {primaryDns}, Вторичный = {secondaryDns}");
+
                 if (dnsChoice == "DNS по умолчанию")
+                {
                     await ClearDnsAsync(interfaceName);
+                }
                 else
                 {
                     if (!IsValidIPAddress(primaryDns) && primaryDns != "Не выбрано")
                         throw new Exception("Некорректный основной DNS-адрес.");
                     if (!string.IsNullOrEmpty(secondaryDns) && secondaryDns != "Не выбрано" && !IsValidIPAddress(secondaryDns))
                         throw new Exception("Некорректный вторичный DNS-адрес.");
+
                     await SetDnsAsync(interfaceName, primaryDns, secondaryDns);
                 }
 
@@ -251,8 +283,10 @@ namespace TrayPenguinDPI
             {
                 LogMessage("Очистка кэша DNS...");
                 var (exitCode, output) = await ProcessHelper.RunProcessWithOutputAsync("ipconfig", "/flushdns");
+
                 if (exitCode != 0)
                     throw new InvalidOperationException("Не удалось очистить кэш DNS.");
+
                 LogMessage("Кэш DNS успешно очищен.");
             }
             catch (Exception ex)
@@ -265,23 +299,32 @@ namespace TrayPenguinDPI
         private static async Task SetDnsAsync(string interfaceName, string primaryDns, string secondaryDns)
         {
             if (string.IsNullOrWhiteSpace(primaryDns) || primaryDns == "Не выбрано")
-                throw new Exception("Основной DNS-сервер не указан.");
+                throw new ArgumentException("Основной DNS не указан.");
 
-            var (exitCode, output) = await ProcessHelper.RunProcessWithOutputAsync("netsh", $"interface ip set dns name=\"{interfaceName}\" source=static address={primaryDns}");
+            var (exitCode, output) = await ProcessHelper.RunProcessWithOutputAsync(
+                "netsh",
+                $"interface ip set dns name=\"{interfaceName}\" source=static address={primaryDns}");
+
             if (exitCode != 0)
                 throw new InvalidOperationException($"Не удалось установить основной DNS: {output}");
 
             if (!string.IsNullOrEmpty(secondaryDns) && secondaryDns != "Не выбрано")
             {
-                (exitCode, output) = await ProcessHelper.RunProcessWithOutputAsync("netsh", $"interface ip add dns name=\"{interfaceName}\" address={secondaryDns} index=2");
-                if (exitCode != 0)
-                    throw new InvalidOperationException($"Не удалось установить вторичный DNS: {output}");
+                var (exitCode2, output2) = await ProcessHelper.RunProcessWithOutputAsync(
+                    "netsh",
+                    $"interface ip add dns name=\"{interfaceName}\" address={secondaryDns} index=2");
+
+                if (exitCode2 != 0)
+                    throw new InvalidOperationException($"Не удалось установить вторичный DNS: {output2}");
             }
         }
 
         private async Task ClearDnsAsync(string interfaceName)
         {
-            var (exitCode, output) = await ProcessHelper.RunProcessWithOutputAsync("netsh", $"interface ip set dns name=\"{interfaceName}\" source=dhcp");
+            var (exitCode, output) = await ProcessHelper.RunProcessWithOutputAsync(
+                "netsh",
+                $"interface ip set dns name=\"{interfaceName}\" source=dhcp");
+
             if (exitCode != 0)
                 throw new InvalidOperationException($"Не удалось очистить DNS: {output}");
         }
@@ -300,7 +343,7 @@ namespace TrayPenguinDPI
             if (string.IsNullOrWhiteSpace(ipAddress) || ipAddress == "Не выбрано")
                 return false;
 
-            // Проверка IPv4
+            // IPv4
             if (Regex.IsMatch(ipAddress, @"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$"))
             {
                 var parts = ipAddress.Split('.');
@@ -312,7 +355,7 @@ namespace TrayPenguinDPI
                 return true;
             }
 
-            // Проверка IPv6 (упрощённая, можно расширить при необходимости)
+            // IPv6
             if (Regex.IsMatch(ipAddress, @"^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$"))
                 return true;
 
