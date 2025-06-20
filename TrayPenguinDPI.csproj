@@ -18,6 +18,7 @@
 		<DebugType>embedded</DebugType>
 		<!-- Встроить отладочные символы -->
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<!-- Включить нативные библиотеки -->
 	</PropertyGroup>
 	<ItemGroup>
@@ -39,8 +40,8 @@
 		<PackageReference Include="AdonisUI" Version="1.17.1" />
 		<PackageReference Include="AdonisUI.ClassicTheme" Version="1.17.1" />
 		<PackageReference Include="NotifyIconEx" Version="1.1.2" />
-		<PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.5" />
-		<PackageReference Include="System.Drawing.Common" Version="9.0.5" />
+		<PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.6" />
+		<PackageReference Include="System.Drawing.Common" Version="9.0.6" />
 	</ItemGroup>
 
 	<ItemGroup>

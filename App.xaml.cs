@@ -91,7 +91,7 @@ namespace TrayPenguinDPI
 
         protected override async void OnStartup(StartupEventArgs e)
         {
-            if (!EnsureSingleInstance() || !EnsureAdminRights(e.Args))
+            if (!EnsureSingleInstance())
             {
                 Shutdown();
                 return;
@@ -103,10 +103,14 @@ namespace TrayPenguinDPI
             string language = RegistrySettings.GetValue("Language", "ru");
             LoadSettings();
             SwitchLanguage(language);
+
             SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
+
             LoadStrategies();
             InitializeTrayIcon();
+
             await HandleStartupTasks();
+
             UpdateMenuState();
         }
 
@@ -173,22 +177,6 @@ namespace TrayPenguinDPI
                     AdonisUI.Controls.MessageBoxImage.Information);
             }
             return isNewInstance;
-        }
-
-        private bool EnsureAdminRights(string[] args)
-        {
-            if (new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator))
-                return true;
-
-            Process.Start(new ProcessStartInfo
-            {
-                UseShellExecute = true,
-                FileName = Environment.ProcessPath,
-                Verb = "runas",
-                WorkingDirectory = Environment.CurrentDirectory,
-                Arguments = string.Join(" ", args)
-            });
-            return false;
         }
 
         private void LoadSettings()
