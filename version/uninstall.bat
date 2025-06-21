@@ -1,12 +1,10 @@
 @echo off
-:: Настройка заголовка и цвета
 title TrayPenguinDPI Uninstaller
 color 0B
 
 :: Очистка экрана
 cls
 
-:: ASCII логотип
 echo.
 echo    _______             __         ____        __           __            
 echo   / ____(_)______     / /_       / __ \____  / /___  _____/ /_____  _____
@@ -21,7 +19,6 @@ echo     Initializing uninstallation process for TrayPenguinDPI...
 echo ==============================================================================
 timeout /t 2 /nobreak >nul
 
-:: Проверка на администратора
 echo.
 echo [CHECK] Verifying administrator privileges...
 net session >nul 2>&1
