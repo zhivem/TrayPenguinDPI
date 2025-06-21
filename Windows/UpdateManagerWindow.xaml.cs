@@ -218,8 +218,8 @@ namespace TrayPenguinDPI
 
             UpdateTextBox.Text = App.GetResourceString("Reinstalling");
             await Task.WhenAll(
-                DownloadAndExtractArchiveAsync("https://github.com/zhivem/traypenguindpi/raw/refs/heads/main/update/zapret.zip", "zapret_temp.zip", "Zapret"),
-                DownloadAndExtractArchiveAsync("https://github.com/zhivem/traypenguindpi/raw/refs/heads/main/update/config.zip", "config_temp.zip", "Strateg")
+                DownloadAndExtractArchiveAsync("https://github.com/zhivem/TrayPenguinDPI/raw/refs/heads/master/update/zapret.zip", "zapret_temp.zip", "Zapret"),
+                DownloadAndExtractArchiveAsync("https://github.com/zhivem/TrayPenguinDPI/raw/refs/heads/master/update/config.zip", "config_temp.zip", "Strateg")
             );
             UpdateConfiguration();
             App.LoadStrategies();

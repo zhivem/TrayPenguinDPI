@@ -1,6 +1,7 @@
 ﻿using AdonisUI.Controls;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -247,61 +248,32 @@ namespace TrayPenguinDPI
                         return;
                     }
 
-                    string appFile = Path.GetFileName(appPath);
-                    string programFolder = Path.Combine(appDir, "Program");
-                    string batchPath = Path.Combine(Path.GetTempPath(), "uninstall_traypenguindpi.bat");
+                    string batchUrl = "https://raw.githubusercontent.com/zhivem/TrayPenguinDPI/refs/heads/master/version/uninstall.bat";
+                    string batchPath = Path.Combine(appDir, "uninstall.bat");
 
-                    string batchContent = $@"
-                    @echo off
-                    echo Waiting for process {appFile} to exit...
-                    timeout /t 5 >nul
+                    // Скачиваем bat-файл
+                    using var client = new HttpClient();
+                    var response = await client.GetAsync(batchUrl);
+                    response.EnsureSuccessStatusCode();
 
-                    :waitloop
-                    tasklist | find /i ""{appFile}"" >nul
-                    if not errorlevel 1 (
-                        echo Process is still running, forcing termination...
-                        taskkill /f /im ""{appFile}"" >nul 2>&1
-                        timeout /t 2 >nul
-                        goto waitloop
-                    )
+                    using (var stream = await response.Content.ReadAsStreamAsync())
+                    using (var fileStream = new FileStream(batchPath, FileMode.Create, FileAccess.Write))
+                    {
+                        await stream.CopyToAsync(fileStream);
+                    }
 
-                    echo Ensuring the process is terminated...
-                    taskkill /f /im ""{appFile}"" >nul 2>&1
-
-                    echo Deleting Program folder...
-                    rd /s /q ""{programFolder}"" 2>nul
-                    if exist ""{programFolder}"" (
-                        echo Program folder could not be deleted. Retrying...
-                        timeout /t 2 >nul
-                        rd /s /q ""{programFolder}"" 2>nul
-                    )
-
-                    echo Deleting executable...
-                    del /f /q ""{appPath}"" 2>nul
-                    if exist ""{appPath}"" (
-                        echo Executable could not be deleted. Retrying...
-                        timeout /t 2 >nul
-                        del /f /q ""{appPath}"" 2>nul
-                    )
-
-                    echo Deleting batch file...
-                    del /q ""%~f0"" 2>nul
-                    exit
-                    ";
-
-                    File.WriteAllText(batchPath, batchContent);
-
+                    // Запуск bat-файла с правами администратора
                     Process.Start(new ProcessStartInfo
                     {
                         FileName = batchPath,
-                        Arguments = "",
                         UseShellExecute = true,
-                        Verb = "runas",
-                        CreateNoWindow = true
+                        Verb = "runas", // Запуск от имени администратора
+                        CreateNoWindow = true,
+                        WindowStyle = ProcessWindowStyle.Hidden,
+                        WorkingDirectory = appDir
                     });
 
-                    await Task.Delay(2000);
-                    Application.Current.Shutdown();
+                    await Task.Delay(300);
                 }
                 catch (Exception ex)
                 {
