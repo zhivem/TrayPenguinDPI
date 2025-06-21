@@ -1,61 +1,61 @@
-@echo off
-title TrayPenguinDPI Uninstaller
-color 0B
+private async void UninstallButton_Click(object sender, RoutedEventArgs e)
+{
+    var result = AdonisUI.Controls.MessageBox.Show(
+        (string)FindResource("UninstallConfirmationMessage"),
+        (string)FindResource("UninstallConfirmationTitle"),
+        AdonisUI.Controls.MessageBoxButton.YesNo,
+        MessageBoxImage.Warning);
 
-:: Очистка экрана
-cls
+    if (result == MessageBoxResult.Yes)
+    {
+        try
+        {
+            await ProcessHelper.CleanupProcessesAndServicesAsync();
+            RegistrySettings.ClearAllSettings();
 
-echo.
-echo    _______             __         ____        __           __            
-echo   / ____(_)______     / /_       / __ \____  / /___  _____/ /_____  _____
-echo  / /_  / / ___/ /    / __ \     / /_/ / __ \/ / __ \/ ___/ __/ __ \/ ___/
-echo / __/ / (__  ) /____/ /_/ /    / ____/ /_/ / / /_/ / /__/ /_/ /_/ / /    
-echo/_/   /_/____/______/_____(_)  /_/    \____/_/\____/\___/\__/\____/_/     
-echo.
-echo                        [TrayPenguinDPI - Uninstaller]
-echo ==============================================================================
-echo.
-echo     Initializing uninstallation process for TrayPenguinDPI...
-echo ==============================================================================
-timeout /t 2 /nobreak >nul
+            string appDir = AppDomain.CurrentDomain.BaseDirectory;
+            string? appPath = Environment.ProcessPath;
 
-echo.
-echo [CHECK] Verifying administrator privileges...
-net session >nul 2>&1
-if %ERRORLEVEL% neq 0 (
-    echo.
-    echo [WARNING] Administrator rights required!
-    echo           Restarting with elevated privileges...
-    timeout /t 2 /nobreak >nul
-    powershell -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
-    exit /b
-)
-echo.
-echo [OK] Administrator privileges confirmed.
-timeout /t 1 /nobreak >nul
+            if (string.IsNullOrEmpty(appPath))
+            {
+                App.ShowErrorMessage("Failed to determine executable path.");
+                return;
+            }
 
-:: Завершение процессов
-echo.
-echo [STEP 1] Terminating processes...
-call :LoadingBar
+            string batchUrl = "https://github.com/zhivem/TrayPenguinDPI/raw/refs/heads/master/update/uninstall.bat"; 
+            string batchPath = Path.Combine(appDir, "uninstall.bat");
 
-echo          - TrayPenguinDPI.exe
-taskkill /IM TrayPenguinDPI.exe /F >nul 2>&1
-if %ERRORLEVEL% neq 0 (echo          [FAILED] Could not terminate TrayPenguinDPI.exe) else (echo          [OK] Terminated successfully)
+            // Скачиваем bat-файл
+            using var client = new HttpClient();
+            var response = await client.GetAsync(batchUrl);
+            response.EnsureSuccessStatusCode();
 
-echo          - winws.exe
-taskkill /IM winws.exe /F >nul 2>&1
-if %ERRORLEVEL% neq 0 (echo          [FAILED] Could not terminate winws.exe) else (echo          [OK] Terminated successfully)
-timeout /t 1 /nobreak >nul
+            using (var stream = await response.Content.ReadAsStreamAsync())
+            using (var fileStream = new FileStream(batchPath, FileMode.Create, FileAccess.Write))
+            {
+                await stream.CopyToAsync(fileStream);
+            }
 
-:: Остановка и удаление служб
-echo.
-echo [STEP 2] Stopping and removing services...
-call :LoadingBar
+            // Запуск bat-файла с правами администратора
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = batchPath,
+                UseShellExecute = true,
+                Verb = "runas", // Запуск от имени администратора
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
+                WorkingDirectory = appDir
+            });
 
-echo          - Zapret
-net stop Zapret >nul 2>&1
-sc delete Zapret >nul 2>&1
-
-echo          - WinDivert
-net stop "WinDivert
+            // Небольшая пауза, чтобы процесс точно стартовал
+            await Task.Delay(500);
+            
+            // Дополнительно можно скрыть главное окно или освободить ресурсы
+            // Но полное завершение оставляем батнику
+        }
+        catch (Exception ex)
+        {
+            App.ShowErrorMessage(string.Format((string)FindResource("UninstallErrorMessage"), ex.Message));
+        }
+    }
+}
