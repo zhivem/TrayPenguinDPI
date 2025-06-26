@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Net.Http;
-using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -194,7 +193,7 @@ namespace TrayPenguinDPI
             }
             else
             {
-                _currentStrategyIndex = 0; // Сбрасываем индекс, если стратегий нет или опция не включена
+                _currentStrategyIndex = 0;
             }
         }
 
