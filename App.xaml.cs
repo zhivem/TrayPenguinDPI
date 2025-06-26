@@ -188,8 +188,14 @@ namespace TrayPenguinDPI
             _currentStrategyIndex = RegistrySettings.GetValue("LastStrategyIndex", 0);
 
             ThemeHelper.SwitchTheme(syncTheme ? ThemeHelper.IsSystemThemeDark() : isDarkTheme);
-            if (useLastConfig)
+            if (useLastConfig && _strategyExecutables.Count > 0)
+            {
                 _currentStrategyIndex = Math.Min(_currentStrategyIndex, _strategyExecutables.Count - 1);
+            }
+            else
+            {
+                _currentStrategyIndex = 0; // Сбрасываем индекс, если стратегий нет или опция не включена
+            }
         }
 
         private void InitializeTrayIcon()
@@ -245,6 +251,10 @@ namespace TrayPenguinDPI
             {
                 UpdateStrategyMenuState();
                 StartZapret_Click(null, null);
+            }
+            else if (RegistrySettings.GetValue("UseLastConfig", false) && _strategyExecutables.Count == 0)
+            {
+                ShowWarningMessage("No strategies found. Please check the Strategies folder or disable 'Use last configuration' in settings.");
             }
         }
 
@@ -403,6 +413,13 @@ namespace TrayPenguinDPI
             if (_isRunning) return;
 
             await ProcessHelper.CleanupProcessesAndServicesAsync();
+
+            // Проверка на наличие стратегий и валидность индекса
+            if (_strategyExecutables.Count == 0 || _currentStrategyIndex < 0 || _currentStrategyIndex >= _strategyExecutables.Count)
+            {
+                ShowErrorMessage("No valid strategies available or invalid strategy index.");
+                return;
+            }
 
             string executable = ReplacePaths(_strategyExecutables[_currentStrategyIndex]);
             if (!File.Exists(executable))
