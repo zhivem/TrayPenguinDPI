@@ -62,6 +62,7 @@ namespace TrayPenguinDPI
             DisableNotificationsCheckBox.IsChecked = !RegistrySettings.GetValue("NotificationsEnabled", true);
             UpdateBlacklistCheckBox.IsChecked = RegistrySettings.GetValue("UpdateBlacklistOnStartup", false);
             SyncThemeCheckBox.IsChecked = RegistrySettings.GetValue("SyncThemeWithSystem", false);
+            GameFilterCheckBox.IsChecked = RegistrySettings.GetValue("GameFilterEnabled", false); // Добавлено
             _isDarkTheme = RegistrySettings.GetValue("CurrentTheme", "Light") == "Dark";
             App.SetCurrentStrategyIndex(RegistrySettings.GetValue("LastStrategyIndex", 0));
             UpdateThemeButtonState();
@@ -74,6 +75,7 @@ namespace TrayPenguinDPI
             bool notificationsDisabled = DisableNotificationsCheckBox.IsChecked ?? false;
             bool updateBlacklist = UpdateBlacklistCheckBox.IsChecked ?? false;
             bool syncTheme = SyncThemeCheckBox.IsChecked ?? false;
+            bool gameFilter = GameFilterCheckBox.IsChecked ?? false;
             string cultureCode = (LanguageComboBox.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "ru";
             string savedLanguage = RegistrySettings.GetValue("Language", "ru");
 
@@ -82,6 +84,7 @@ namespace TrayPenguinDPI
             RegistrySettings.SetValue("NotificationsEnabled", !notificationsDisabled);
             RegistrySettings.SetValue("UpdateBlacklistOnStartup", updateBlacklist);
             RegistrySettings.SetValue("SyncThemeWithSystem", syncTheme);
+            RegistrySettings.SetValue("GameFilterEnabled", gameFilter); 
             RegistrySettings.SetValue("CurrentTheme", _isDarkTheme ? "Dark" : "Light");
             RegistrySettings.SetValue("LastStrategyIndex", lastConfig ? App.GetCurrentStrategyIndex() : 0);
             RegistrySettings.SetValue("Language", cultureCode);
@@ -143,6 +146,14 @@ namespace TrayPenguinDPI
             }
         }
 
+        private void GameFilterCheckBox_Changed(object sender, RoutedEventArgs e)
+        {
+            if (GameFilterCheckBox.IsChecked != App.GameFilterEnabled)
+            {
+                App.ShowNotification("TrayPenguinDPI", "RestartZapretRequired");
+            }
+        }
+
         private void ToggleThemeButton_Click(object sender, RoutedEventArgs e)
         {
             if (SyncThemeCheckBox.IsChecked == true) return;
@@ -196,7 +207,7 @@ namespace TrayPenguinDPI
         {
             string serviceName = "Zapret";
             string binPath = Path.Combine(App.ZapretPath, "winws.exe");
-            string args = App.GetCurrentStrategyArgs();
+            string args = App.ReplacePaths(App.GetCurrentStrategyArgs()); 
             string fullBinPath = $"\"{binPath}\" {args}";
 
             await ProcessHelper.CleanupProcessesAndServicesAsync();
@@ -251,7 +262,6 @@ namespace TrayPenguinDPI
                     string batchUrl = "https://raw.githubusercontent.com/zhivem/TrayPenguinDPI/refs/heads/master/version/uninstall.bat";
                     string batchPath = Path.Combine(appDir, "uninstall.bat");
 
-                    // Скачиваем bat-файл
                     using var client = new HttpClient();
                     var response = await client.GetAsync(batchUrl);
                     response.EnsureSuccessStatusCode();
@@ -262,12 +272,11 @@ namespace TrayPenguinDPI
                         await stream.CopyToAsync(fileStream);
                     }
 
-                    // Запуск bat-файла с правами администратора
                     Process.Start(new ProcessStartInfo
                     {
                         FileName = batchPath,
                         UseShellExecute = true,
-                        Verb = "runas", // Запуск от имени администратора
+                        Verb = "runas",
                         CreateNoWindow = true,
                         WindowStyle = ProcessWindowStyle.Hidden,
                         WorkingDirectory = appDir

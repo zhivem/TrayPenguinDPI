@@ -4,11 +4,11 @@
         xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
         xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
         Title="{DynamicResource SettingsTitle}"
-        Height="543"
-        Width="706"
+        Height="538"
+        Width="729"
         ResizeMode="NoResize"
-        WindowStartupLocation="CenterScreen">
-
+        WindowStartupLocation="CenterScreen"
+        FontSize="14">
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type Window}}"/>
     </adonisControls:AdonisWindow.Style>
@@ -47,6 +47,11 @@
                           Content="{DynamicResource UpdateBlacklist}"
                           Margin="0,0,0,5"
                           HorizontalAlignment="Left"/>
+                <CheckBox x:Name="GameFilterCheckBox" 
+                          Content="{DynamicResource GameFilter}"
+                          Margin="0,0,0,5" 
+                          Checked="GameFilterCheckBox_Changed" 
+                          Unchecked="GameFilterCheckBox_Changed" />
                 <CheckBox x:Name="SyncThemeCheckBox"
                           Content="{DynamicResource SyncTheme}"
                           Margin="0,0,0,5"

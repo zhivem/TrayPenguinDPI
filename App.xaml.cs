@@ -46,6 +46,7 @@ namespace TrayPenguinDPI
         private static int _currentStrategyIndex;
         private static readonly Queue<(string title, string message)> _notificationQueue = new();
         private static bool _isShowingNotification = false;
+        public static bool GameFilterEnabled { get; set; } = false;
 
         public static bool NotificationsEnabled { get; set; } = true;
 
@@ -181,6 +182,7 @@ namespace TrayPenguinDPI
         private void LoadSettings()
         {
             NotificationsEnabled = RegistrySettings.GetValue("NotificationsEnabled", true);
+            GameFilterEnabled = RegistrySettings.GetValue("GameFilterEnabled", false);
             bool syncTheme = RegistrySettings.GetValue("SyncThemeWithSystem", false);
             bool isDarkTheme = RegistrySettings.GetValue("CurrentTheme", "Light") == "Dark";
             bool useLastConfig = RegistrySettings.GetValue("UseLastConfig", false);
@@ -337,9 +339,26 @@ namespace TrayPenguinDPI
             }
         }
 
-        public static string ReplacePaths(string input)
+        public static string ReplacePaths(string input, bool isExecutable = false)
         {
-            return _replacementRegex.Replace(input, match => _pathReplacements[match.Value]);
+            string gameFilterValue = GameFilterEnabled ? "1024-65535" : "0";
+
+            var replacements = new Dictionary<string, string>
+            {
+                { "{ZAPRET}", ZapretPath },
+                { "{BLACKLIST}", BlacklistPath }
+            };
+
+            string result = _replacementRegex.Replace(input, match =>
+            {
+                if (replacements.TryGetValue(match.Value, out var replacement))
+                {
+                    return !isExecutable && replacement.Contains(" ") ? $"\"{replacement}\"" : replacement;
+                }
+                return match.Value;
+            });
+
+            return result.Replace("{GameFilter}", gameFilterValue);
         }
 
         private static void ParseStrategyFile(string file)
@@ -413,21 +432,25 @@ namespace TrayPenguinDPI
 
             await ProcessHelper.CleanupProcessesAndServicesAsync();
 
-            // Проверка на наличие стратегий и валидность индекса
             if (_strategyExecutables.Count == 0 || _currentStrategyIndex < 0 || _currentStrategyIndex >= _strategyExecutables.Count)
             {
                 ShowErrorMessage("No valid strategies available or invalid strategy index.");
                 return;
             }
 
-            string executable = ReplacePaths(_strategyExecutables[_currentStrategyIndex]);
+            string executable = ReplacePaths(_strategyExecutables[_currentStrategyIndex], isExecutable: true);
             if (!File.Exists(executable))
             {
                 ShowErrorMessage($"File {executable} not found.");
                 return;
             }
 
-            string args = ReplacePaths(_strategyArgs[_currentStrategyIndex]);
+            string args = ReplacePaths(_strategyArgs[_currentStrategyIndex], isExecutable: false);
+            if (!CheckStrategyFiles(args))
+            {
+                ShowErrorMessage("One or more required files in strategy arguments are missing.");
+                return;
+            }
 
             try
             {
@@ -444,13 +467,35 @@ namespace TrayPenguinDPI
             }
             catch (Exception ex)
             {
-                ShowErrorMessage($"Error: {ex.Message}");
+                ShowErrorMessage($"Error starting winws.exe: {ex.Message}");
                 lock (_processLock)
                 {
                     _isRunning = false;
                 }
                 UpdateMenuState();
             }
+        }
+
+        private static bool CheckStrategyFiles(string args)
+        {
+            bool allFilesExist = true;
+            var filePatterns = new[] { @"--hostlist=([^\s;]+)", @"--ipset=([^\s;]+)", @"--dpi-desync-fake-quic=([^\s;]+)", @"--dpi-desync-split-seqovl-pattern=([^\s;]+)", @"--dpi-desync-fake-unknown-udp=([^\s;]+)" };
+
+            foreach (var pattern in filePatterns)
+            {
+                var matches = Regex.Matches(args, pattern);
+                foreach (Match match in matches)
+                {
+                    string filePath = match.Groups[1].Value;
+                    filePath = ReplacePaths(filePath);
+                    if (!File.Exists(filePath))
+                    {
+                        allFilesExist = false;
+                    }
+                }
+            }
+
+            return allFilesExist;
         }
 
         private static async void StopZapret_Click(object? sender, EventArgs? e)

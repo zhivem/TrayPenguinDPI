@@ -64,29 +64,43 @@ namespace TrayPenguinDPI.Helpers
 
         public static Process StartProcess(string executable, string args)
         {
-            var processInfo = new ProcessStartInfo
+            try
             {
-                FileName = executable,
-                Arguments = args,
-                CreateNoWindow = true,
-                UseShellExecute = false,
-                WorkingDirectory = App.ZapretPath,
-                WindowStyle = ProcessWindowStyle.Hidden,
-                StandardOutputEncoding = Encoding.UTF8,
-                StandardErrorEncoding = Encoding.UTF8,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true
-            };
+                if (!File.Exists(executable))
+                {
+                    throw new FileNotFoundException($"Executable not found: {executable}");
+                }
 
-            Process? process = Process.Start(processInfo);
-            if (process == null)
-                throw new InvalidOperationException($"Failed to start process: {executable}");
+                var processInfo = new ProcessStartInfo
+                {
+                    FileName = executable,
+                    Arguments = args,
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    WorkingDirectory = App.ZapretPath,
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    StandardOutputEncoding = Encoding.UTF8,
+                    StandardErrorEncoding = Encoding.UTF8,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
+                };
 
-            process.EnableRaisingEvents = true;
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
+                Process? process = Process.Start(processInfo);
+                if (process == null)
+                {
+                    throw new InvalidOperationException($"Failed to start process: {executable}");
+                }
 
-            return process;
+                process.EnableRaisingEvents = true;
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+
+                return process;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         private static async Task<(int ExitCode, string? Output)> RunProcessInternalAsync(

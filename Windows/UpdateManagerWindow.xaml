@@ -7,7 +7,8 @@
                              Height="251"
                              Width="570"
                              ResizeMode="NoResize"
-                             WindowStartupLocation="CenterScreen">
+                             WindowStartupLocation="CenterScreen"
+                             FontSize="14">
 
     <adonisControls:AdonisWindow.Style>
         <Style TargetType="adonisControls:AdonisWindow" BasedOn="{StaticResource {x:Type Window}}"/>

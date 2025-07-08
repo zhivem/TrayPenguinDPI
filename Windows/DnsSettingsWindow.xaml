@@ -3,10 +3,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
         Title="{DynamicResource DnsSettingsTitle}" 
-        Height="650" 
+        Height="651" 
         Width="550"
         WindowStartupLocation="CenterOwner"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        FontSize="14">
     <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
