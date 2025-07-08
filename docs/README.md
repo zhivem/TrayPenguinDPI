@@ -1,6 +1,6 @@
 # TrayPenguinDPI - Обход DPI
 
-<img src="https://github.com/zhivem/TrayPenguinDPI/blob/master/penguin.ico" width=10% height=10%>
+<img src="https://github.com/zhivem/TrayPenguinDPI/blob/master/penguin.ico">
 
 [![en](https://img.shields.io/badge/lang-en-red.svg)](./README.EN.md)
 [![ru](https://img.shields.io/badge/lang-ru-green.svg)](./README.md)
