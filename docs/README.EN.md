@@ -1,6 +1,6 @@
 # TrayPenguinDPI - DPI Bypass
 
-<img src="https://github.com/zhivem/TrayPenguinDPI/blob/master/penguin.ico">
+<img src="https://raw.githubusercontent.com/zhivem/TrayPenguinDPI/master/penguin.ico" width="42">
 
 TrayPenguinDPI is a Windows application written in `C#` designed to bypass Deep Packet Inspection (DPI) systems. It operates from the system tray with support for both dark and light themes.
 
